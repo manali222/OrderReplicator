@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="orderreplicator" translate="title" sortOrder="500" showInDefault="1"
+                 showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Order Replicator</label>
+            <tab>sales</tab>
+            <resource>MageClone_OrderReplicator::config</resource>
+
+            <group id="general" translate="label" type="text" sortOrder="10"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Settings</label>
+
+                <field id="enabled" translate="label comment" type="select" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Module</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable or disable the Order Replicator module</comment>
+                </field>
+
+                <field id="send_email" translate="label comment" type="select" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send Order Confirmation Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Send order confirmation email to the new customer</comment>
+                </field>
+
+                <field id="default_order_status" translate="label comment" type="select"
+                       sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Order Status for Replicated Orders</label>
+                    <source_model>Magento\Sales\Model\Config\Source\Order\Status</source_model>
+                    <comment>Status assigned to newly replicated orders</comment>
+                </field>
+
+                <field id="default_payment_method" translate="label comment" type="text"
+                       sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Default Payment Method Code</label>
+                    <comment>Payment method code for replicated orders (e.g., checkmo, free)</comment>
+                </field>
+
+                <field id="auto_create_customer" translate="label comment" type="select"
+                       sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Auto-Create Customer Account</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Automatically create customer account if email does not exist</comment>
+                </field>
+            </group>
+
+            <group id="csv" translate="label" type="text" sortOrder="20"
+                   showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>CSV Settings</label>
+
+                <field id="max_rows" translate="label comment" type="text" sortOrder="10"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Maximum CSV Rows</label>
+                    <comment>Maximum number of rows allowed in a single CSV upload (default: 500)</comment>
+                    <validate>validate-digits</validate>
+                </field>
+
+                <field id="delimiter" translate="label" type="text" sortOrder="20"
+                       showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>CSV Delimiter</label>
+                    <comment>Default: comma (,)</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>

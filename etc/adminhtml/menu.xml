@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="MageClone_OrderReplicator::main"
+             title="Order Replicator"
+             module="MageClone_OrderReplicator"
+             sortOrder="90"
+             parent="Magento_Sales::sales"
+             resource="MageClone_OrderReplicator::order_replicator"/>
+
+        <add id="MageClone_OrderReplicator::orders"
+             title="Replicate Orders"
+             module="MageClone_OrderReplicator"
+             sortOrder="10"
+             parent="MageClone_OrderReplicator::main"
+             action="orderreplicator/order/index"
+             resource="MageClone_OrderReplicator::view"/>
+
+        <add id="MageClone_OrderReplicator::csv"
+             title="CSV Bulk Replication"
+             module="MageClone_OrderReplicator"
+             sortOrder="20"
+             parent="MageClone_OrderReplicator::main"
+             action="orderreplicator/csv/upload"
+             resource="MageClone_OrderReplicator::csv_upload"/>
+
+        <add id="MageClone_OrderReplicator::log"
+             title="Replication Log"
+             module="MageClone_OrderReplicator"
+             sortOrder="30"
+             parent="MageClone_OrderReplicator::main"
+             action="orderreplicator/log/index"
+             resource="MageClone_OrderReplicator::view"/>
+    </menu>
+</config>

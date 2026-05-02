@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listing xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+
+    <argument name="data" xsi:type="array">
+        <item name="js_config" xsi:type="array">
+            <item name="provider" xsi:type="string">mageclone_order_listing.mageclone_order_listing_data_source</item>
+        </item>
+    </argument>
+
+    <settings>
+        <spinner>mageclone_order_listing_columns</spinner>
+        <deps>
+            <dep>mageclone_order_listing.mageclone_order_listing_data_source</dep>
+        </deps>
+    </settings>
+
+    <dataSource name="mageclone_order_listing_data_source" component="Magento_Ui/js/grid/provider">
+        <settings>
+            <updateUrl path="mui/index/render"/>
+        </settings>
+        <dataProvider class="Magento\Framework\View\Element\UiComponent\DataProvider\DataProvider"
+                      name="mageclone_order_listing_data_source">
+            <settings>
+                <requestFieldName>id</requestFieldName>
+                <primaryFieldName>entity_id</primaryFieldName>
+            </settings>
+        </dataProvider>
+    </dataSource>
+
+    <listingToolbar name="listing_top">
+        <settings>
+            <sticky>true</sticky>
+        </settings>
+        <bookmark name="bookmarks"/>
+        <columnsControls name="columns_controls"/>
+        <filterSearch name="fulltext"/>
+        <filters name="listing_filters"/>
+        <paging name="listing_paging"/>
+    </listingToolbar>
+
+    <columns name="mageclone_order_listing_columns">
+        <selectionsColumn name="ids" sortOrder="0">
+            <settings>
+                <indexField>entity_id</indexField>
+            </settings>
+        </selectionsColumn>
+
+        <column name="entity_id" sortOrder="10">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">ID</label>
+                <sorting>desc</sorting>
+            </settings>
+        </column>
+
+        <column name="increment_id" sortOrder="20">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Order #</label>
+            </settings>
+        </column>
+
+        <column name="created_at" class="Magento\Ui\Component\Listing\Columns\Date"
+                component="Magento_Ui/js/grid/columns/date" sortOrder="30">
+            <settings>
+                <filter>dateRange</filter>
+                <label translate="true">Purchase Date</label>
+                <dataType>date</dataType>
+            </settings>
+        </column>
+
+        <column name="customer_email" sortOrder="40">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Customer Email</label>
+            </settings>
+        </column>
+
+        <column name="customer_firstname" sortOrder="50">
+            <settings>
+                <filter>text</filter>
+                <label translate="true">Customer Name</label>
+            </settings>
+        </column>
+
+        <column name="grand_total" class="Magento\Sales\Ui\Component\Listing\Column\Price" sortOrder="60">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Grand Total</label>
+            </settings>
+        </column>
+
+        <column name="status" component="Magento_Ui/js/grid/columns/select" sortOrder="70">
+            <settings>
+                <filter>select</filter>
+                <label translate="true">Status</label>
+                <dataType>select</dataType>
+                <options class="Magento\Sales\Ui\Component\Listing\Column\Status\Options"/>
+            </settings>
+        </column>
+
+        <column name="total_qty_ordered" sortOrder="80">
+            <settings>
+                <filter>textRange</filter>
+                <label translate="true">Items Qty</label>
+            </settings>
+        </column>
+
+        <actionsColumn name="actions"
+                       class="MageClone\OrderReplicator\Ui\Component\Listing\Column\Actions"
+                       sortOrder="200">
+            <settings>
+                <indexField>entity_id</indexField>
+                <label translate="true">Replicate</label>
+            </settings>
+        </actionsColumn>
+    </columns>
+</listing>

@@ -1,93 +1,353 @@
-# manali222-project
+# MageClone Order Replicator — Magento 2 Module
 
+**Version:** 1.0.0
+**Compatibility:** Magento 2.4.x / Adobe Commerce
+**PHP:** 8.1+
+**License:** MIT
 
+---
 
-## Getting started
+## What It Does
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+MageClone Order Replicator is a Magento 2 admin module that lets you **clone any existing order** and create a new order for a different customer — with the ability to modify SKUs, prices, quantities, shipping method, and payment method per order.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+It also supports **bulk CSV upload** to replicate one source order across hundreds of customers at once.
 
-## Add your files
+---
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+## Key Features
 
-```
-cd existing_repo
-git remote add origin https://gitlab.com/manali222/manali222-project.git
-git branch -M main
-git push -uf origin main
-```
+| Feature | Description |
+|---------|-------------|
+| **1-Click Order Clone** | Select any existing order and replicate it for a new customer |
+| **SKU/Price/Qty Override** | Change product SKUs, prices, or quantities on the replicated order |
+| **Per-Customer Shipping Method** | Set a different shipping method per replicated order |
+| **Per-Customer Payment Method** | Set a different payment method per replicated order |
+| **CSV Bulk Upload** | Upload a CSV with customer emails + addresses to create orders in bulk |
+| **Auto Customer Creation** | Optionally auto-create customer accounts for new emails |
+| **Replication Log** | Full audit trail of all replicated orders with status tracking |
+| **ACL Permissions** | Granular admin role permissions (view, replicate, CSV upload, config) |
+| **Composer Support** | Install via `composer require` |
 
-## Integrate with your tools
+---
 
-* [Set up project integrations](https://gitlab.com/manali222/manali222-project/-/settings/integrations)
+## Business Use Cases
 
-## Collaborate with your team
+### B2B Wholesale Reordering
+Sales reps can clone a previous wholesale order and assign it to a new buyer in seconds — no need to manually re-enter 50+ line items.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Corporate Gift Orders
+A company orders 200 identical gift boxes for employees. Upload a CSV with 200 employee names/addresses, and the module creates 200 individual orders from one source order.
 
-## Test and Deploy
+### Franchise / Multi-Location Distribution
+HQ creates a "template" order, then replicates it to 50 franchise locations. Each location can have different shipping/payment methods.
 
-Use the built-in continuous integration in GitLab.
+### Phone Order Desk
+"I want the same thing Customer X ordered, but change the widget to the blue version" → Clone, modify SKU, submit. Done in 30 seconds.
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+### Subscription-Like Repeat Orders
+For stores without auto-subscription, staff can quickly replicate last month's order for regular customers.
 
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+---
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
 
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
+### Method 1: Composer (Recommended)
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+```bash
+# Add the repository (if hosting privately)
+composer config repositories.mageclone vcs https://github.com/YOUR-ORG/mageclone-order-replicator.git
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# Install
+composer require mageclone/module-order-replicator:^1.0
+
+# Enable and setup
+bin/magento module:enable MageClone_OrderReplicator
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
+```
+
+### Method 2: Manual Installation
+
+```bash
+# Copy module to app/code
+cp -r MageClone/ <magento-root>/app/code/
+
+# Enable and setup
+bin/magento module:enable MageClone_OrderReplicator
+bin/magento setup:upgrade
+bin/magento setup:di:compile
+bin/magento cache:flush
+```
+
+### Method 3: Warden (Local Development)
+
+```bash
+# From your Warden project root
+warden env exec php-fpm bin/magento module:enable MageClone_OrderReplicator
+warden env exec php-fpm bin/magento setup:upgrade
+warden env exec php-fpm bin/magento setup:di:compile
+warden env exec php-fpm bin/magento cache:flush
+```
+
+---
+
+## Configuration
+
+Navigate to **Stores → Configuration → Sales → Order Replicator**
+
+### General Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Enable Module | No | Must be enabled to use |
+| Send Order Confirmation Email | No | Email new customer on order creation |
+| Default Order Status | Pending | Status for new replicated orders |
+| Default Payment Method | `checkmo` | Fallback payment method code |
+| Auto-Create Customer Account | No | Create customer account if email is new |
+
+### CSV Settings
+
+| Setting | Default | Description |
+|---------|---------|-------------|
+| Maximum CSV Rows | 500 | Max rows per CSV upload |
+| CSV Delimiter | `,` | Column separator character |
+
+---
+
+## Usage Guide
+
+### Single Order Replication (Admin UI)
+
+1. Go to **Sales → Order Replicator → Replicate Orders**
+2. You'll see a grid of all existing orders
+3. Click **"Replicate"** on any order
+4. On the replication page you'll see:
+   - **Source Order Summary** — original order details
+   - **Order Items Table** — editable SKU, price, qty per line item
+   - **New Customer Details** — email, first name, last name (required)
+   - **Billing Address** — leave blank to use source order's address
+   - **Shipping Address** — leave blank to use source order's address
+   - **Shipping & Payment Method** — override per this customer or use source order defaults
+5. Click **"Replicate Order"**
+6. See success message with link to the new order
+
+### CSV Bulk Replication
+
+1. Go to **Sales → Order Replicator → CSV Bulk Replication**
+2. Enter the **Source Order ID** (the order to clone)
+3. Download the CSV template
+4. Fill in customer details (one row per new order)
+5. Upload the CSV and click **"Process CSV & Create Orders"**
+6. See results: success count, failed count, error details
+
+### Replication Log
+
+Go to **Sales → Order Replicator → Replication Log** to see full audit trail of all replication attempts with:
+- Source order # → New order #
+- Customer email
+- Status (pending/processing/completed/failed)
+- Error messages for failed attempts
+- Timestamp
+
+---
+
+## CSV Template Reference
+
+### Required Columns
+
+| Column | Description |
+|--------|-------------|
+| `customer_email` | New customer's email address |
+| `customer_firstname` | First name |
+| `customer_lastname` | Last name |
+
+### Optional Address Columns
+
+| Column | Description |
+|--------|-------------|
+| `billing_street` | Street address (uses source order if blank) |
+| `billing_city` | City |
+| `billing_region` | State/Region name |
+| `billing_region_id` | Magento region ID |
+| `billing_postcode` | ZIP/Postal code |
+| `billing_country_id` | Country code (US, GB, etc.) |
+| `billing_telephone` | Phone number |
+| `shipping_street` | Shipping street (falls back to billing) |
+| `shipping_city` | Shipping city |
+| `shipping_region` | Shipping state/region |
+| `shipping_region_id` | Shipping region ID |
+| `shipping_postcode` | Shipping ZIP |
+| `shipping_country_id` | Shipping country |
+| `shipping_telephone` | Shipping phone |
+
+### Optional Item Override Columns
+
+| Column | Description |
+|--------|-------------|
+| `override_sku` | Pipe-separated new SKUs (e.g., `SKU-A\|SKU-B`) |
+| `override_price` | Pipe-separated prices matching SKU order |
+| `override_qty` | Pipe-separated quantities matching SKU order |
+
+### Sample CSV
+
+```csv
+customer_email,customer_firstname,customer_lastname,billing_street,billing_city,billing_region,billing_postcode,billing_country_id,billing_telephone
+john@example.com,John,Doe,123 Main St,New York,New York,10001,US,555-123-4567
+jane@example.com,Jane,Smith,456 Oak Ave,Los Angeles,California,90001,US,555-987-6543
+```
+
+---
+
+## ACL Permissions
+
+| Resource | Description |
+|----------|-------------|
+| `MageClone_OrderReplicator::order_replicator` | Parent resource |
+| `MageClone_OrderReplicator::view` | View orders and replication log |
+| `MageClone_OrderReplicator::replicate` | Execute order replication |
+| `MageClone_OrderReplicator::csv_upload` | Upload CSV for bulk replication |
+| `MageClone_OrderReplicator::config` | Module configuration |
+
+To set permissions: **System → Permissions → User Roles → [Role] → Role Resources**
+
+---
+
+## Admin Menu Location
+
+```
+Sales
+└── Order Replicator
+    ├── Replicate Orders        (order grid with Replicate action)
+    ├── CSV Bulk Replication     (upload CSV page)
+    └── Replication Log          (audit log grid)
+```
+
+---
+
+## Technical Architecture
+
+### Module Structure
+
+```
+MageClone/OrderReplicator/
+├── registration.php                          # Module registration
+├── composer.json                             # Composer package definition
+├── phpunit.xml                               # PHPUnit config
+├── etc/
+│   ├── module.xml                            # Module declaration + dependencies
+│   ├── di.xml                                # Dependency injection config
+│   ├── acl.xml                               # Admin permissions
+│   ├── db_schema.xml                         # Database table definition
+│   └── adminhtml/
+│       ├── routes.xml                        # Admin routes
+│       ├── menu.xml                          # Admin menu items
+│       └── system.xml                        # Store configuration fields
+├── Api/
+│   └── OrderReplicatorInterface.php          # Service contract
+├── Model/
+│   ├── OrderReplicator.php                   # Core replication logic
+│   ├── CsvProcessor.php                      # CSV parsing + batch processing
+│   ├── ReplicationLog.php                    # Log model
+│   └── ResourceModel/
+│       └── ReplicationLog/
+│           ├── ReplicationLog.php            # Resource model
+│           └── Collection.php                # Collection
+├── Controller/Adminhtml/
+│   ├── Order/
+│   │   ├── Index.php                         # Order grid page
+│   │   ├── View.php                          # Order replication form
+│   │   └── Replicate.php                     # AJAX replication endpoint
+│   ├── Csv/
+│   │   ├── Upload.php                        # CSV upload page
+│   │   ├── Process.php                       # CSV processing endpoint
+│   │   └── DownloadTemplate.php              # Template download
+│   └── Log/
+│       └── Index.php                         # Replication log grid
+├── Block/Adminhtml/
+│   ├── Order/ViewOrder.php                   # Order view block
+│   └── Csv/Upload.php                        # CSV upload block
+├── Ui/Component/Listing/Column/
+│   └── Actions.php                           # Grid action column
+├── Helper/
+│   └── Config.php                            # Configuration helper
+├── view/adminhtml/
+│   ├── layout/                               # Layout XML files
+│   ├── templates/                            # PHTML templates
+│   ├── ui_component/                         # UI component grids
+│   └── web/
+│       ├── css/order-replicator.css          # Admin styles
+│       └── js/                               # RequireJS modules
+└── Test/Unit/                                # PHPUnit tests
+```
+
+### How Replication Works (Flow)
+
+```
+1. Admin selects source order
+2. Admin fills in new customer details + optional item modifications
+3. System loads source order via OrderRepositoryInterface
+4. System resolves or creates customer account
+5. System creates a new Quote (cart) with:
+   - Products from source order (with any SKU/price/qty overrides)
+   - New customer's billing/shipping addresses
+   - Selected shipping method (or source order default)
+   - Selected payment method (or config default)
+6. Quote is submitted via CartManagementInterface::placeOrder()
+7. New order is created with configured status
+8. Replication log entry is saved
+9. Optional: order confirmation email sent
+```
+
+---
+
+## Running Tests
+
+```bash
+# From Magento root
+vendor/bin/phpunit -c app/code/MageClone/OrderReplicator/phpunit.xml
+
+# Or with Warden
+warden env exec php-fpm vendor/bin/phpunit -c app/code/MageClone/OrderReplicator/phpunit.xml
+```
+
+---
+
+## Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| Menu not showing | Run `bin/magento cache:flush` and check ACL permissions |
+| "Module is disabled" error | Enable in Stores → Config → Sales → Order Replicator |
+| Product SKU not found | Ensure the SKU exists and is enabled in the same store |
+| CSV upload fails | Check file is valid CSV, under max row limit, has required columns |
+| Order total is $0 | Check that products have prices and are saleable |
+| Customer not created | Enable "Auto-Create Customer Account" in config |
+
+---
+
+## Uninstall
+
+```bash
+bin/magento module:disable MageClone_OrderReplicator
+bin/magento setup:upgrade
+composer remove mageclone/module-order-replicator
+```
+
+---
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Write tests for new functionality
+4. Ensure all tests pass
+5. Follow Magento 2 coding standards (`vendor/bin/phpcs --standard=Magento2`)
+6. Submit a pull request
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+---
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+MIT License — see [LICENSE](LICENSE) file.

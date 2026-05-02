@@ -1,0 +1,45 @@
+{
+    "name": "mageclone/module-order-replicator",
+    "description": "Magento 2 Admin module to replicate existing orders with modified SKU, price, and customer details via CSV upload",
+    "type": "magento2-module",
+    "version": "1.0.0",
+    "license": "MIT",
+    "keywords": [
+        "magento2",
+        "order",
+        "replication",
+        "clone",
+        "csv",
+        "admin"
+    ],
+    "authors": [
+        {
+            "name": "MageClone",
+            "email": "dev@mageclone.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "magento/framework": ">=103.0",
+        "magento/module-sales": ">=103.0",
+        "magento/module-catalog": ">=104.0",
+        "magento/module-customer": ">=103.0",
+        "magento/module-quote": ">=101.0",
+        "magento/module-backend": ">=102.0",
+        "magento/module-ui": ">=101.0"
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "MageClone\\OrderReplicator\\": ""
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://repo.magento.com/"
+        }
+    ]
+}

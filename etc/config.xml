@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <orderreplicator>
+            <general>
+                <enabled>0</enabled>
+                <send_email>0</send_email>
+                <default_order_status>pending</default_order_status>
+                <default_payment_method>checkmo</default_payment_method>
+                <auto_create_customer>0</auto_create_customer>
+            </general>
+            <csv>
+                <max_rows>500</max_rows>
+                <delimiter>,</delimiter>
+            </csv>
+        </orderreplicator>
+    </default>
+</config>

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <table name="mageclone_replication_log" resource="default" engine="innodb"
+           comment="Order Replication Log">
+        <column xsi:type="int" name="log_id" unsigned="true" nullable="false" identity="true"
+                comment="Log ID"/>
+        <column xsi:type="int" name="source_order_id" unsigned="true" nullable="false"
+                comment="Source Order ID"/>
+        <column xsi:type="varchar" name="source_increment_id" nullable="false" length="50"
+                comment="Source Order Increment ID"/>
+        <column xsi:type="int" name="new_order_id" unsigned="true" nullable="true"
+                comment="New Order ID"/>
+        <column xsi:type="varchar" name="new_increment_id" nullable="true" length="50"
+                comment="New Order Increment ID"/>
+        <column xsi:type="varchar" name="customer_email" nullable="false" length="255"
+                comment="Customer Email"/>
+        <column xsi:type="text" name="modifications_json" nullable="true"
+                comment="JSON of SKU/Price modifications"/>
+        <column xsi:type="varchar" name="status" nullable="false" length="20" default="pending"
+                comment="Replication Status: pending, processing, completed, failed"/>
+        <column xsi:type="text" name="error_message" nullable="true"
+                comment="Error Message if failed"/>
+        <column xsi:type="varchar" name="csv_filename" nullable="true" length="255"
+                comment="Source CSV filename"/>
+        <column xsi:type="int" name="admin_user_id" unsigned="true" nullable="true"
+                comment="Admin User who initiated"/>
+        <column xsi:type="timestamp" name="created_at" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" nullable="false" default="CURRENT_TIMESTAMP"
+                on_update="true" comment="Updated At"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="log_id"/>
+        </constraint>
+        <index referenceId="MAGECLONE_REPL_LOG_SOURCE_ORDER" indexType="btree">
+            <column name="source_order_id"/>
+        </index>
+        <index referenceId="MAGECLONE_REPL_LOG_STATUS" indexType="btree">
+            <column name="status"/>
+        </index>
+        <index referenceId="MAGECLONE_REPL_LOG_EMAIL" indexType="btree">
+            <column name="customer_email"/>
+        </index>
+    </table>
+</schema>

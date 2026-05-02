@@ -1,0 +1,156 @@
+<?php
+/**
+ * @var \MageClone\OrderReplicator\Block\Adminhtml\Csv\Upload $block
+ */
+?>
+
+<div class="order-replicator-container" id="csv-upload-form">
+    <div class="order-replicator-section">
+        <h2><?= $block->escapeHtml(__('CSV Bulk Order Replication')) ?></h2>
+        <p class="order-replicator-description">
+            <?= $block->escapeHtml(__('Upload a CSV file to replicate a source order for multiple customers. Each row in the CSV represents a new customer who will receive a copy of the source order.')) ?>
+        </p>
+    </div>
+
+    <div class="order-replicator-section">
+        <h3><?= $block->escapeHtml(__('Step 1: Enter Source Order ID')) ?></h3>
+        <fieldset class="admin__fieldset">
+            <div class="admin__field">
+                <label class="admin__field-label" for="source_order_id">
+                    <span><?= $block->escapeHtml(__('Source Order ID or Increment ID *')) ?></span>
+                </label>
+                <div class="admin__field-control">
+                    <input type="text" id="source_order_id" name="source_order_id"
+                           class="admin__control-text required-entry" required
+                           placeholder="<?= $block->escapeHtmlAttr(__('e.g., 000000001')) ?>"/>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <div class="order-replicator-section">
+        <h3><?= $block->escapeHtml(__('Step 2: Upload CSV File')) ?></h3>
+        <fieldset class="admin__fieldset">
+            <div class="admin__field">
+                <label class="admin__field-label" for="csv_file">
+                    <span><?= $block->escapeHtml(__('CSV File *')) ?></span>
+                </label>
+                <div class="admin__field-control">
+                    <input type="file" id="csv_file" name="csv_file"
+                           accept=".csv" class="admin__control-file" required/>
+                </div>
+                <div class="admin__field-note">
+                    <span><?= $block->escapeHtml(__('Accepted format: .csv')) ?></span>
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="csv-template-download">
+            <a href="<?= $block->escapeUrl($block->getDownloadTemplateUrl()) ?>" class="action-secondary">
+                <span><?= $block->escapeHtml(__('Download CSV Template')) ?></span>
+            </a>
+        </div>
+    </div>
+
+    <div class="order-replicator-section">
+        <h3><?= $block->escapeHtml(__('CSV Column Reference')) ?></h3>
+        <table class="admin__table-primary">
+            <thead>
+                <tr>
+                    <th><?= $block->escapeHtml(__('Column')) ?></th>
+                    <th><?= $block->escapeHtml(__('Required')) ?></th>
+                    <th><?= $block->escapeHtml(__('Description')) ?></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>customer_email</code></td>
+                    <td><?= $block->escapeHtml(__('Yes')) ?></td>
+                    <td><?= $block->escapeHtml(__('New customer email address')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>customer_firstname</code></td>
+                    <td><?= $block->escapeHtml(__('Yes')) ?></td>
+                    <td><?= $block->escapeHtml(__('Customer first name')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>customer_lastname</code></td>
+                    <td><?= $block->escapeHtml(__('Yes')) ?></td>
+                    <td><?= $block->escapeHtml(__('Customer last name')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>billing_street</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Billing street address (uses source order if blank)')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>billing_city</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Billing city')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>billing_region</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Billing state/region name')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>billing_postcode</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Billing zip/postal code')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>billing_country_id</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Billing country code (e.g., US, GB)')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>billing_telephone</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Billing phone number')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>shipping_*</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Same as billing_ columns but for shipping. Falls back to billing if blank.')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>override_sku</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Pipe-separated SKUs to replace (e.g., NEW-SKU-1|NEW-SKU-2)')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>override_price</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Pipe-separated prices matching override_sku order')) ?></td>
+                </tr>
+                <tr>
+                    <td><code>override_qty</code></td>
+                    <td><?= $block->escapeHtml(__('No')) ?></td>
+                    <td><?= $block->escapeHtml(__('Pipe-separated quantities matching override_sku order')) ?></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-replicator-actions">
+        <button type="button" id="btn-process-csv" class="action-primary">
+            <span><?= $block->escapeHtml(__('Process CSV & Create Orders')) ?></span>
+        </button>
+    </div>
+
+    <div id="csv-result" class="order-replicator-result" style="display:none;"></div>
+    <div id="csv-progress" class="order-replicator-progress" style="display:none;">
+        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <span class="progress-text"></span>
+    </div>
+</div>
+
+<script type="text/x-magento-init">
+{
+    "#csv-upload-form": {
+        "MageClone_OrderReplicator/js/csv-upload": {
+            "processUrl": "<?= $block->escapeUrl($block->getProcessUrl()) ?>"
+        }
+    }
+}
+</script>
