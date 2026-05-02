@@ -52,21 +52,29 @@ For stores without auto-subscription, staff can quickly replicate last month's o
 
 ## Installation
 
-### Method 1: Composer (Recommended)
+### Method 1: Composer (Recommended — Private GitLab Repo)
 
 ```bash
-# Add the repository (if hosting privately)
-composer config repositories.mageclone vcs https://github.com/YOUR-ORG/mageclone-order-replicator.git
+# Step 1: Create a GitLab Personal Access Token with read_repository scope
+# Go to: https://gitlab.com/-/user_settings/personal_access_tokens
 
-# Install
+# Step 2: Configure composer auth for GitLab
+composer config --global --auth gitlab-token.gitlab.com YOUR_PERSONAL_ACCESS_TOKEN
+
+# Step 3: Add the private GitLab repository
+composer config repositories.mageclone '{"type": "vcs", "url": "git@gitlab.com:manali222/manali222-project.git"}'
+
+# Step 4: Install
 composer require mageclone/module-order-replicator:^1.0
 
-# Enable and setup
+# Step 5: Enable and setup
 bin/magento module:enable MageClone_OrderReplicator
 bin/magento setup:upgrade
 bin/magento setup:di:compile
 bin/magento cache:flush
 ```
+
+> **Note:** This is a private repository. You need SSH access or a GitLab Personal Access Token to install via Composer.
 
 ### Method 2: Manual Installation
 

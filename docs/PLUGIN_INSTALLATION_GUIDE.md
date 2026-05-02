@@ -16,12 +16,19 @@ This guide enables **any developer** to clone this repo and have a working Order
 
 ## Quick Start (5 Minutes)
 
-### Step 1: Clone the Repository
+### Step 1: Clone the Repository (Private — Requires Access)
 
 ```bash
-git clone https://github.com/YOUR-ORG/mageclone-order-replicator.git
-cd mageclone-order-replicator
+# SSH (recommended if you have SSH key configured)
+git clone git@gitlab.com:manali222/manali222-project.git
+
+# Or HTTPS (requires GitLab Personal Access Token)
+git clone https://gitlab.com/manali222/manali222-project.git
+
+cd manali222-project
 ```
+
+> **This is a private repository.** Contact the repo owner for access.
 
 ### Step 2: Copy to Your Magento Installation
 
@@ -91,11 +98,11 @@ bin/magento setup:di:compile
 bin/magento cache:flush
 ```
 
-### Option B: From Private Git Repository
+### Option B: From Private GitLab Repository (SSH)
 
 ```bash
-# Add the repository
-composer config repositories.mageclone vcs https://github.com/YOUR-ORG/mageclone-order-replicator.git
+# Add the private repo via SSH
+composer config repositories.mageclone '{"type": "vcs", "url": "git@gitlab.com:manali222/manali222-project.git"}'
 
 # Install
 composer require mageclone/module-order-replicator:^1.0
@@ -107,10 +114,19 @@ bin/magento setup:di:compile
 bin/magento cache:flush
 ```
 
-### Option C: From Packagist (If Published)
+### Option C: From Private GitLab Repository (HTTPS + Token)
 
 ```bash
-composer require mageclone/module-order-replicator
+# Configure GitLab auth token first
+composer config --global --auth gitlab-token.gitlab.com YOUR_PERSONAL_ACCESS_TOKEN
+
+# Add the private repo
+composer config repositories.mageclone vcs https://gitlab.com/manali222/manali222-project.git
+
+# Install
+composer require mageclone/module-order-replicator:^1.0
+
+# Setup
 bin/magento module:enable MageClone_OrderReplicator
 bin/magento setup:upgrade
 bin/magento setup:di:compile
