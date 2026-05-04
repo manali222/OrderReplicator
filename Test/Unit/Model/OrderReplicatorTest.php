@@ -12,22 +12,33 @@ use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Customer\Api\AccountManagementInterface;
 use Magento\Customer\Api\CustomerRepositoryInterface;
 use Magento\Customer\Api\Data\CustomerInterface;
-use Magento\Customer\Api\Data\CustomerInterfaceFactory;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Quote\Api\CartManagementInterface;
 use Magento\Quote\Api\CartRepositoryInterface;
 use Magento\Quote\Model\Quote;
-use Magento\Quote\Model\QuoteFactory;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderItemInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Api\Data\WebsiteInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+
+// Stub auto-generated factory classes so PHPUnit can mock them
+if (!class_exists(\Magento\Customer\Api\Data\CustomerInterfaceFactory::class)) {
+    class_alias(
+        \MageClone\OrderReplicator\Test\Unit\Model\Stub\CustomerInterfaceFactoryStub::class,
+        \Magento\Customer\Api\Data\CustomerInterfaceFactory::class
+    );
+}
+if (!class_exists(\Magento\Quote\Model\QuoteFactory::class)) {
+    class_alias(
+        \MageClone\OrderReplicator\Test\Unit\Model\Stub\QuoteFactoryStub::class,
+        \Magento\Quote\Model\QuoteFactory::class
+    );
+}
 
 class OrderReplicatorTest extends TestCase
 {
@@ -35,24 +46,21 @@ class OrderReplicatorTest extends TestCase
     private OrderRepositoryInterface|MockObject $orderRepository;
     private ProductRepositoryInterface|MockObject $productRepository;
     private CustomerRepositoryInterface|MockObject $customerRepository;
-    private CustomerInterfaceFactory|MockObject $customerFactory;
     private AccountManagementInterface|MockObject $accountManagement;
-    private QuoteFactory|MockObject $quoteFactory;
     private CartManagementInterface|MockObject $cartManagement;
     private CartRepositoryInterface|MockObject $cartRepository;
     private StoreManagerInterface|MockObject $storeManager;
     private Config|MockObject $config;
     private ReplicationLogFactory|MockObject $replicationLogFactory;
     private ReplicationLogResource|MockObject $replicationLogResource;
+    private Quote|MockObject $quoteMock;
 
     protected function setUp(): void
     {
         $this->orderRepository = $this->createMock(OrderRepositoryInterface::class);
         $this->productRepository = $this->createMock(ProductRepositoryInterface::class);
         $this->customerRepository = $this->createMock(CustomerRepositoryInterface::class);
-        $this->customerFactory = $this->createMock(CustomerInterfaceFactory::class);
         $this->accountManagement = $this->createMock(AccountManagementInterface::class);
-        $this->quoteFactory = $this->createMock(QuoteFactory::class);
         $this->cartManagement = $this->createMock(CartManagementInterface::class);
         $this->cartRepository = $this->createMock(CartRepositoryInterface::class);
         $this->storeManager = $this->createMock(StoreManagerInterface::class);
@@ -61,13 +69,23 @@ class OrderReplicatorTest extends TestCase
         $this->replicationLogResource = $this->createMock(ReplicationLogResource::class);
         $logger = $this->createMock(LoggerInterface::class);
 
+        // Auto-generated factories are stubbed via class_alias above so createMock works
+        $customerMock = $this->createMock(CustomerInterface::class);
+        $customerFactory = $this->createMock(\Magento\Customer\Api\Data\CustomerInterfaceFactory::class);
+        $customerFactory->method('create')->willReturn($customerMock);
+
+        $quoteMock = $this->createMock(Quote::class);
+        $quoteFactory = $this->createMock(\Magento\Quote\Model\QuoteFactory::class);
+        $quoteFactory->method('create')->willReturn($quoteMock);
+        $this->quoteMock = $quoteMock;
+
         $this->replicator = new OrderReplicator(
             $this->orderRepository,
             $this->productRepository,
             $this->customerRepository,
-            $this->customerFactory,
+            $customerFactory,
             $this->accountManagement,
-            $this->quoteFactory,
+            $quoteFactory,
             $this->cartManagement,
             $this->cartRepository,
             $this->storeManager,
@@ -96,14 +114,9 @@ class OrderReplicatorTest extends TestCase
             'override_qty' => '3|1',
         ];
 
-        // Setup mocks for full order replication flow
         $this->setupFullReplicationMocks();
 
-        $newOrder = $this->createMock(OrderInterface::class);
-        $newOrder->method('getEntityId')->willReturn(99);
-        $newOrder->method('getIncrementId')->willReturn('000000099');
-        $newOrder->method('setStatus')->willReturnSelf();
-        $newOrder->method('addCommentToStatusHistory')->willReturnSelf();
+        $newOrder = $this->createNewOrderMock(99, '000000099');
 
         $this->cartManagement->method('placeOrder')->willReturn(99);
         $this->orderRepository->method('get')
@@ -136,11 +149,7 @@ class OrderReplicatorTest extends TestCase
     {
         $this->setupFullReplicationMocks();
 
-        $newOrder = $this->createMock(OrderInterface::class);
-        $newOrder->method('getEntityId')->willReturn(50);
-        $newOrder->method('getIncrementId')->willReturn('000000050');
-        $newOrder->method('setStatus')->willReturnSelf();
-        $newOrder->method('addCommentToStatusHistory')->willReturnSelf();
+        $newOrder = $this->createNewOrderMock(50, '000000050');
 
         $this->cartManagement->method('placeOrder')->willReturn(50);
         $this->orderRepository->method('get')
@@ -149,7 +158,6 @@ class OrderReplicatorTest extends TestCase
                 $newOrder
             );
 
-        // No email = guest order, should not call customerRepository
         $this->customerRepository->expects($this->never())->method('get');
 
         $result = $this->replicator->replicate(1, ['email' => '']);
@@ -163,7 +171,7 @@ class OrderReplicatorTest extends TestCase
         $log->method('setData')->willReturnSelf();
         $this->replicationLogFactory->method('create')->willReturn($log);
 
-        $store = $this->createMock(StoreInterface::class);
+        $store = $this->createMock(\Magento\Store\Model\Store::class);
         $store->method('getId')->willReturn(1);
         $store->method('getWebsiteId')->willReturn(1);
         $this->storeManager->method('getStore')->willReturn($store);
@@ -172,39 +180,7 @@ class OrderReplicatorTest extends TestCase
         $this->config->method('getDefaultPaymentMethod')->willReturn('checkmo');
         $this->config->method('shouldAutoCreateCustomer')->willReturn(false);
 
-        $quote = $this->getMockBuilder(Quote::class)
-            ->disableOriginalConstructor()
-            ->addMethods([
-                'setStore',
-                'setStoreId',
-                'setCurrency',
-                'setCustomerIsGuest',
-                'setCustomerEmail',
-                'setCustomerFirstname',
-                'setCustomerLastname',
-                'setPaymentMethod',
-                'setInventoryProcessed',
-            ])
-            ->onlyMethods([
-                'assignCustomer',
-                'addProduct',
-                'getBillingAddress',
-                'getShippingAddress',
-                'getPayment',
-                'collectTotals',
-                'getId',
-            ])
-            ->getMock();
-
-        $quote->method('setStore')->willReturnSelf();
-        $quote->method('setStoreId')->willReturnSelf();
-        $quote->method('setCurrency')->willReturnSelf();
-        $quote->method('setCustomerIsGuest')->willReturnSelf();
-        $quote->method('setCustomerEmail')->willReturnSelf();
-        $quote->method('setCustomerFirstname')->willReturnSelf();
-        $quote->method('setCustomerLastname')->willReturnSelf();
-        $quote->method('setPaymentMethod')->willReturnSelf();
-        $quote->method('setInventoryProcessed')->willReturnSelf();
+        $quote = $this->quoteMock;
         $quote->method('collectTotals')->willReturnSelf();
         $quote->method('getId')->willReturn(1);
 
@@ -225,7 +201,11 @@ class OrderReplicatorTest extends TestCase
         $quotePayment->method('importData')->willReturnSelf();
         $quote->method('getPayment')->willReturn($quotePayment);
 
-        $quoteItem = $this->createMock(\Magento\Quote\Model\Quote\Item::class);
+        $quoteItem = $this->getMockBuilder(\Magento\Quote\Model\Quote\Item::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['setOriginalCustomPrice'])
+            ->onlyMethods(['setCustomPrice', 'getProduct'])
+            ->getMock();
         $quoteItem->method('setCustomPrice')->willReturnSelf();
         $quoteItem->method('setOriginalCustomPrice')->willReturnSelf();
         $quoteItem->method('getProduct')->willReturn(
@@ -233,15 +213,33 @@ class OrderReplicatorTest extends TestCase
         );
         $quote->method('addProduct')->willReturn($quoteItem);
 
-        $this->quoteFactory->method('create')->willReturn($quote);
-
         $product = $this->createMock(\Magento\Catalog\Model\Product::class);
         $this->productRepository->method('get')->willReturn($product);
     }
 
-    private function createSourceOrderMock(): OrderInterface|MockObject
+    private function createNewOrderMock(int $entityId, string $incrementId): MockObject
     {
-        $order = $this->createMock(OrderInterface::class);
+        $newOrder = $this->getMockBuilder(\Magento\Sales\Model\Order::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getEntityId', 'getIncrementId', 'setStatus', 'addCommentToStatusHistory', 'save'])
+            ->getMock();
+        $newOrder->method('getEntityId')->willReturn($entityId);
+        $newOrder->method('getIncrementId')->willReturn($incrementId);
+        $newOrder->method('setStatus')->willReturnSelf();
+        $newOrder->method('addCommentToStatusHistory')->willReturnSelf();
+        return $newOrder;
+    }
+
+    private function createSourceOrderMock(): MockObject
+    {
+        $order = $this->getMockBuilder(\Magento\Sales\Model\Order::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([
+                'getEntityId', 'getIncrementId', 'getStoreId',
+                'getCustomerEmail', 'getCustomerFirstname', 'getCustomerLastname',
+                'getShippingMethod', 'getItems', 'getBillingAddress', 'getShippingAddress', 'getPayment'
+            ])
+            ->getMock();
         $order->method('getEntityId')->willReturn(1);
         $order->method('getIncrementId')->willReturn('000000001');
         $order->method('getStoreId')->willReturn(1);

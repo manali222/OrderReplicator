@@ -7,7 +7,7 @@ use MageClone\OrderReplicator\Api\OrderReplicatorInterface;
 use MageClone\OrderReplicator\Controller\Adminhtml\Order\Replicate;
 use MageClone\OrderReplicator\Helper\Config;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\App\Request\Http as HttpRequest;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -20,14 +20,15 @@ class ReplicateTest extends TestCase
     private OrderReplicatorInterface|MockObject $orderReplicator;
     private Config|MockObject $config;
     private JsonFactory|MockObject $jsonFactory;
-    private RequestInterface|MockObject $request;
+    private HttpRequest|MockObject $request;
     private Json|MockObject $jsonResult;
 
     protected function setUp(): void
     {
-        $this->request = $this->getMockBuilder(RequestInterface::class)
-            ->addMethods(['getParam', 'isPost'])
-            ->getMockForAbstractClass();
+        $this->request = $this->getMockBuilder(HttpRequest::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getParam', 'isPost'])
+            ->getMock();
 
         $context = $this->createMock(Context::class);
         $context->method('getRequest')->willReturn($this->request);
