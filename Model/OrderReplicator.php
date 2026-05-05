@@ -106,7 +106,9 @@ class OrderReplicator implements OrderReplicatorInterface
                 $this->logger->error('OrderReplicator: Failed to save error log: ' . $logException->getMessage());
             }
 
-            $this->logger->error('OrderReplicator: Replication failed: ' . $e->getMessage());
+            $this->logger->error('OrderReplicator: Replication failed: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
             throw new LocalizedException(
                 __('Order replication failed: %1', $e->getMessage()),
                 $e
@@ -132,13 +134,13 @@ class OrderReplicator implements OrderReplicatorInterface
             'billing_postcode' => $csvRow['billing_postcode'] ?? '',
             'billing_country_id' => $csvRow['billing_country_id'] ?? '',
             'billing_telephone' => $csvRow['billing_telephone'] ?? '',
-            'shipping_street' => $csvRow['shipping_street'] ?? $csvRow['billing_street'] ?? '',
-            'shipping_city' => $csvRow['shipping_city'] ?? $csvRow['billing_city'] ?? '',
-            'shipping_region' => $csvRow['shipping_region'] ?? $csvRow['billing_region'] ?? '',
-            'shipping_region_id' => $csvRow['shipping_region_id'] ?? $csvRow['billing_region_id'] ?? '',
-            'shipping_postcode' => $csvRow['shipping_postcode'] ?? $csvRow['billing_postcode'] ?? '',
-            'shipping_country_id' => $csvRow['shipping_country_id'] ?? $csvRow['billing_country_id'] ?? '',
-            'shipping_telephone' => $csvRow['shipping_telephone'] ?? $csvRow['billing_telephone'] ?? '',
+            'shipping_street' => !empty($csvRow['shipping_street']) ? $csvRow['shipping_street'] : ($csvRow['billing_street'] ?? ''),
+            'shipping_city' => !empty($csvRow['shipping_city']) ? $csvRow['shipping_city'] : ($csvRow['billing_city'] ?? ''),
+            'shipping_region' => !empty($csvRow['shipping_region']) ? $csvRow['shipping_region'] : ($csvRow['billing_region'] ?? ''),
+            'shipping_region_id' => !empty($csvRow['shipping_region_id']) ? $csvRow['shipping_region_id'] : ($csvRow['billing_region_id'] ?? ''),
+            'shipping_postcode' => !empty($csvRow['shipping_postcode']) ? $csvRow['shipping_postcode'] : ($csvRow['billing_postcode'] ?? ''),
+            'shipping_country_id' => !empty($csvRow['shipping_country_id']) ? $csvRow['shipping_country_id'] : ($csvRow['billing_country_id'] ?? ''),
+            'shipping_telephone' => !empty($csvRow['shipping_telephone']) ? $csvRow['shipping_telephone'] : ($csvRow['billing_telephone'] ?? ''),
             'shipping_method' => $csvRow['shipping_method'] ?? '',
             'payment_method' => $csvRow['payment_method'] ?? '',
         ];
