@@ -180,6 +180,8 @@ class CsvProcessor
             '90001',                    // shipping_postcode
             'US',                       // shipping_country_id
             '555-987-6543',             // shipping_telephone
+            'flatrate_flatrate',        // shipping_method
+            'checkmo',                  // payment_method
             'NEW-SKU-001|NEW-SKU-002',  // override_sku (pipe-separated)
             '29.99|49.99',              // override_price (pipe-separated)
             '2|1',                      // override_qty (pipe-separated)
