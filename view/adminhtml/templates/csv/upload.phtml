@@ -149,7 +149,8 @@
 {
     "#csv-upload-form": {
         "MageClone_OrderReplicator/js/csv-upload": {
-            "processUrl": "<?= $block->escapeUrl($block->getProcessUrl()) ?>"
+            "processUrl": "<?= $block->escapeUrl($block->getProcessUrl()) ?>",
+            "orderViewBaseUrl": "<?= $block->escapeUrl($block->getUrl('sales/order/view')) ?>"
         }
     }
 }

@@ -64,8 +64,8 @@ define([
                             response.details.orders.forEach(function (order) {
                                 html += '<tr>';
                                 html += '<td>' + order.row + '</td>';
-                                html += '<td><a href="' + BASE_URL + 'sales/order/view/order_id/' +
-                                    order.order_id + '/">' + order.order_id + '</a></td>';
+                                html += '<td><a href="' + config.orderViewBaseUrl + 'order_id/' +
+                                    order.entity_id + '/">#' + order.order_id + '</a></td>';
                                 html += '<td>' + order.email + '</td>';
                                 html += '</tr>';
                             });

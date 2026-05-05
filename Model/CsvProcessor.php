@@ -110,6 +110,7 @@ class CsvProcessor
                 $results['success']++;
                 $results['orders'][] = [
                     'row' => $rowNumber,
+                    'entity_id' => $newOrder->getEntityId(),
                     'order_id' => $newOrder->getIncrementId(),
                     'email' => $csvRow['customer_email'],
                 ];
