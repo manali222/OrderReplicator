@@ -7,6 +7,22 @@
 
 ---
 
+## Screenshots
+
+### Order View — Replicate Buttons
+![Order View with Replicate Buttons](docs/screenshots/01-order-view-buttons.png)
+
+### Replicate Order Form
+![Replicate Order Form](docs/screenshots/02-replicate-order-form.png)
+
+### CSV Bulk Upload (Prefilled Order ID)
+![CSV Upload Prefilled](docs/screenshots/03-csv-upload-prefilled.png)
+
+### Replication Log
+![Replication Log](docs/screenshots/04-replication-log.png)
+
+---
+
 ## What It Does
 
 MageClone Order Replicator is a Magento 2 admin module that lets you **clone any existing order** and create a new order for a different customer — with the ability to modify SKUs, prices, quantities, shipping method, and payment method per order.
@@ -128,10 +144,9 @@ Navigate to **Stores → Configuration → Sales → Order Replicator**
 
 ### Single Order Replication (Admin UI)
 
-1. Go to **Sales → Order Replicator → Replicate Orders**
-2. You'll see a grid of all existing orders
-3. Click **"Replicate"** on any order
-4. On the replication page you'll see:
+1. Go to **Sales → Orders** and open any order
+2. Click **"Replicate Order"** in the button bar at the top
+3. On the replication page you'll see:
    - **Source Order Summary** — original order details
    - **Order Items Table** — editable SKU, price, qty per line item
    - **New Customer Details** — email, first name, last name (required)
@@ -143,8 +158,8 @@ Navigate to **Stores → Configuration → Sales → Order Replicator**
 
 ### CSV Bulk Replication
 
-1. Go to **Sales → Order Replicator → CSV Bulk Replication**
-2. Enter the **Source Order ID** (the order to clone)
+1. From any order view, click **"CSV Bulk Replicate"** (the source order ID is prefilled), or go to **Sales → Order Replicator → CSV Bulk Replication**
+2. Enter the **Source Order ID** if not already prefilled
 3. Download the CSV template
 4. Fill in customer details (one row per new order)
 5. Upload the CSV and click **"Process CSV & Create Orders"**
@@ -226,8 +241,8 @@ To set permissions: **System → Permissions → User Roles → [Role] → Role 
 
 ```
 Sales
+├── Orders                      (native Magento grid — each order has Replicate buttons)
 └── Order Replicator
-    ├── Replicate Orders        (order grid with Replicate action)
     ├── CSV Bulk Replication     (upload CSV page)
     └── Replication Log          (audit log grid)
 ```
@@ -314,10 +329,55 @@ MageClone/OrderReplicator/
 
 ```bash
 # From Magento root
-vendor/bin/phpunit -c app/code/MageClone/OrderReplicator/phpunit.xml
+vendor/bin/phpunit -c app/code/MageClone/OrderReplicator/phpunit.xml --bootstrap vendor/autoload.php
 
 # Or with Warden
-warden env exec php-fpm vendor/bin/phpunit -c app/code/MageClone/OrderReplicator/phpunit.xml
+warden env exec php-fpm vendor/bin/phpunit -c app/code/MageClone/OrderReplicator/phpunit.xml --bootstrap vendor/autoload.php
+```
+
+### Test Results (23 tests, 41 assertions — all passing)
+
+```
+PHPUnit 10.5.63 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.30
+
+.......................                                           23 / 23 (100%)
+
+Time: 00:00.497, Memory: 24.00 MB
+
+Config (MageClone\OrderReplicator\Test\Unit\Helper\Config)
+ ✔ Is enabled returns true
+ ✔ Is enabled returns false
+ ✔ Get default order status returns pending when not set
+ ✔ Get default order status returns configured value
+ ✔ Get default payment method returns checkmo when not set
+ ✔ Get max csv rows returns 500 when not set
+ ✔ Get max csv rows returns configured value
+ ✔ Get csv delimiter returns comma when not set
+ ✔ Should send email returns bool
+ ✔ Should auto create customer returns bool
+
+Csv Processor (MageClone\OrderReplicator\Test\Unit\Model\CsvProcessor)
+ ✔ Process throws exception for empty csv
+ ✔ Process throws exception for missing required columns
+ ✔ Process throws exception when exceeding max rows
+ ✔ Process successfully replicates orders
+ ✔ Process handles partial failures
+ ✔ Process handles column count mismatch
+ ✔ Generate template returns valid csv
+
+Order Replicator (MageClone\OrderReplicator\Test\Unit\Model\OrderReplicator)
+ ✔ Replicate from csv row maps fields correctly
+ ✔ Replicate logs failure on exception
+ ✔ Replicate creates guest order when no email
+
+Replicate (MageClone\OrderReplicator\Test\Unit\Controller\Adminhtml\Order\Replicate)
+ ✔ Execute returns error when module disabled
+ ✔ Execute returns error when no order id
+ ✔ Execute returns success on replication
+
+OK (23 tests, 41 assertions)
 ```
 
 ---
