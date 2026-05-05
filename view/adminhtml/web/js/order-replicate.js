@@ -7,6 +7,7 @@ define([
 
     return function (config, element) {
         var replicateUrl = config.replicateUrl,
+            orderViewBaseUrl = config.orderViewBaseUrl,
             orderId = config.orderId,
             sourceIncrementId = config.sourceIncrementId;
 
@@ -59,7 +60,7 @@ define([
                         resultDiv.removeClass('error').addClass('success');
                         resultDiv.html(
                             '<strong>' + response.message + '</strong>' +
-                            '<br/><a href="' + BASE_URL + 'sales/order/view/order_id/' +
+                            '<br/><a href="' + orderViewBaseUrl + 'order_id/' +
                             response.new_order_id + '/">' +
                             $t('View New Order #') + response.new_increment_id + '</a>'
                         );

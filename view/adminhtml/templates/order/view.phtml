@@ -284,6 +284,7 @@ $shipping = $order->getShippingAddress();
     "#order-replicator-form": {
         "MageClone_OrderReplicator/js/order-replicate": {
             "replicateUrl": "<?= $block->escapeUrl($block->getReplicateUrl()) ?>",
+            "orderViewBaseUrl": "<?= $block->escapeUrl($block->getUrl('sales/order/view')) ?>",
             "orderId": <?= (int) $order->getEntityId() ?>,
             "sourceIncrementId": "<?= $block->escapeJs($order->getIncrementId()) ?>"
         }
