@@ -249,15 +249,17 @@ class OrderReplicator implements OrderReplicatorInterface
                 ->collectShippingRates();
         }
 
+        // Save quote first so store_id is persisted for payment processing
+        $quote->setInventoryProcessed(false);
+        $quote->collectTotals();
+        $this->cartRepository->save($quote);
+
         // Set payment method — per-customer override or config default
         $paymentMethod = !empty($customerData['payment_method'])
             ? $customerData['payment_method']
             : $this->config->getDefaultPaymentMethod((int) $store->getId());
         $quote->setPaymentMethod($paymentMethod);
         $quote->getPayment()->importData(['method' => $paymentMethod]);
-
-        $quote->setInventoryProcessed(false);
-        $quote->collectTotals();
         $this->cartRepository->save($quote);
 
         return $quote;
@@ -352,42 +354,38 @@ class OrderReplicator implements OrderReplicatorInterface
         OrderInterface $sourceOrder,
         array $customerData
     ): void {
-        // Billing address
+        // Billing address — use source values when overrides are empty
         $sourceBilling = $sourceOrder->getBillingAddress();
         $billingData = [
-            'firstname' => $customerData['firstname'] ?? $sourceBilling->getFirstname(),
-            'lastname' => $customerData['lastname'] ?? $sourceBilling->getLastname(),
-            'street' => !empty($customerData['billing_street'])
-                ? $customerData['billing_street']
-                : $sourceBilling->getStreet(),
-            'city' => $customerData['billing_city'] ?? $sourceBilling->getCity(),
-            'region' => $customerData['billing_region'] ?? $sourceBilling->getRegion(),
-            'region_id' => $customerData['billing_region_id'] ?? $sourceBilling->getRegionId(),
-            'postcode' => $customerData['billing_postcode'] ?? $sourceBilling->getPostcode(),
-            'country_id' => $customerData['billing_country_id'] ?? $sourceBilling->getCountryId(),
-            'telephone' => $customerData['billing_telephone'] ?? $sourceBilling->getTelephone(),
-            'email' => $customerData['email'] ?? $sourceOrder->getCustomerEmail(),
+            'firstname' => !empty($customerData['firstname']) ? $customerData['firstname'] : $sourceBilling->getFirstname(),
+            'lastname' => !empty($customerData['lastname']) ? $customerData['lastname'] : $sourceBilling->getLastname(),
+            'street' => !empty($customerData['billing_street']) ? $customerData['billing_street'] : $sourceBilling->getStreet(),
+            'city' => !empty($customerData['billing_city']) ? $customerData['billing_city'] : $sourceBilling->getCity(),
+            'region' => !empty($customerData['billing_region']) ? $customerData['billing_region'] : $sourceBilling->getRegion(),
+            'region_id' => !empty($customerData['billing_region_id']) ? $customerData['billing_region_id'] : $sourceBilling->getRegionId(),
+            'postcode' => !empty($customerData['billing_postcode']) ? $customerData['billing_postcode'] : $sourceBilling->getPostcode(),
+            'country_id' => !empty($customerData['billing_country_id']) ? $customerData['billing_country_id'] : $sourceBilling->getCountryId(),
+            'telephone' => !empty($customerData['billing_telephone']) ? $customerData['billing_telephone'] : $sourceBilling->getTelephone(),
+            'email' => !empty($customerData['email']) ? $customerData['email'] : $sourceOrder->getCustomerEmail(),
         ];
 
         $quoteBilling = $quote->getBillingAddress();
         $quoteBilling->addData($billingData);
 
-        // Shipping address
+        // Shipping address — use source values when overrides are empty
         $sourceShipping = $sourceOrder->getShippingAddress();
         if ($sourceShipping) {
             $shippingData = [
-                'firstname' => $customerData['firstname'] ?? $sourceShipping->getFirstname(),
-                'lastname' => $customerData['lastname'] ?? $sourceShipping->getLastname(),
-                'street' => !empty($customerData['shipping_street'])
-                    ? $customerData['shipping_street']
-                    : $sourceShipping->getStreet(),
-                'city' => $customerData['shipping_city'] ?? $sourceShipping->getCity(),
-                'region' => $customerData['shipping_region'] ?? $sourceShipping->getRegion(),
-                'region_id' => $customerData['shipping_region_id'] ?? $sourceShipping->getRegionId(),
-                'postcode' => $customerData['shipping_postcode'] ?? $sourceShipping->getPostcode(),
-                'country_id' => $customerData['shipping_country_id'] ?? $sourceShipping->getCountryId(),
-                'telephone' => $customerData['shipping_telephone'] ?? $sourceShipping->getTelephone(),
-                'email' => $customerData['email'] ?? $sourceOrder->getCustomerEmail(),
+                'firstname' => !empty($customerData['firstname']) ? $customerData['firstname'] : $sourceShipping->getFirstname(),
+                'lastname' => !empty($customerData['lastname']) ? $customerData['lastname'] : $sourceShipping->getLastname(),
+                'street' => !empty($customerData['shipping_street']) ? $customerData['shipping_street'] : $sourceShipping->getStreet(),
+                'city' => !empty($customerData['shipping_city']) ? $customerData['shipping_city'] : $sourceShipping->getCity(),
+                'region' => !empty($customerData['shipping_region']) ? $customerData['shipping_region'] : $sourceShipping->getRegion(),
+                'region_id' => !empty($customerData['shipping_region_id']) ? $customerData['shipping_region_id'] : $sourceShipping->getRegionId(),
+                'postcode' => !empty($customerData['shipping_postcode']) ? $customerData['shipping_postcode'] : $sourceShipping->getPostcode(),
+                'country_id' => !empty($customerData['shipping_country_id']) ? $customerData['shipping_country_id'] : $sourceShipping->getCountryId(),
+                'telephone' => !empty($customerData['shipping_telephone']) ? $customerData['shipping_telephone'] : $sourceShipping->getTelephone(),
+                'email' => !empty($customerData['email']) ? $customerData['email'] : $sourceOrder->getCustomerEmail(),
             ];
 
             $quoteShipping = $quote->getShippingAddress();
