@@ -9,14 +9,6 @@
              parent="Magento_Sales::sales"
              resource="MageClone_OrderReplicator::order_replicator"/>
 
-        <add id="MageClone_OrderReplicator::orders"
-             title="Replicate Orders"
-             module="MageClone_OrderReplicator"
-             sortOrder="10"
-             parent="MageClone_OrderReplicator::main"
-             action="orderreplicator/order/index"
-             resource="MageClone_OrderReplicator::view"/>
-
         <add id="MageClone_OrderReplicator::csv"
              title="CSV Bulk Replication"
              module="MageClone_OrderReplicator"

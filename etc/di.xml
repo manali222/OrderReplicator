@@ -14,9 +14,6 @@
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
-                <item name="mageclone_order_listing_data_source" xsi:type="string">
-                    Magento\Sales\Model\ResourceModel\Order\Grid\Collection
-                </item>
                 <item name="mageclone_replication_log_listing_data_source" xsi:type="string">
                     MageClone\OrderReplicator\Model\ResourceModel\ReplicationLog\Grid\Collection
                 </item>

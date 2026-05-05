@@ -5,14 +5,16 @@
 ?>
 
 <div class="order-replicator-container" id="csv-upload-form">
-    <div class="order-replicator-section">
+    <!-- Header Card -->
+    <div class="or-card or-card--highlight">
         <h2><?= $block->escapeHtml(__('CSV Bulk Order Replication')) ?></h2>
         <p class="order-replicator-description">
             <?= $block->escapeHtml(__('Upload a CSV file to replicate a source order for multiple customers. Each row in the CSV represents a new customer who will receive a copy of the source order.')) ?>
         </p>
     </div>
 
-    <div class="order-replicator-section">
+    <!-- Step 1: Source Order -->
+    <div class="or-card">
         <h3><?= $block->escapeHtml(__('Step 1: Enter Source Order ID')) ?></h3>
         <fieldset class="admin__fieldset">
             <div class="admin__field">
@@ -22,28 +24,28 @@
                 <div class="admin__field-control">
                     <input type="text" id="source_order_id" name="source_order_id"
                            class="admin__control-text required-entry" required
-                           placeholder="<?= $block->escapeHtmlAttr(__('e.g., 000000001')) ?>"/>
+                           placeholder="<?= $block->escapeHtmlAttr(__('e.g., 000000001')) ?>"
+                           value="<?= $block->escapeHtmlAttr($block->getPrefilledOrderId()) ?>"/>
+                    <p class="or-help-text">
+                        <?= $block->escapeHtml(__('Enter the increment ID of the order you want to replicate for each customer in the CSV.')) ?>
+                    </p>
                 </div>
             </div>
         </fieldset>
     </div>
 
-    <div class="order-replicator-section">
+    <!-- Step 2: Upload CSV -->
+    <div class="or-card">
         <h3><?= $block->escapeHtml(__('Step 2: Upload CSV File')) ?></h3>
-        <fieldset class="admin__fieldset">
-            <div class="admin__field">
-                <label class="admin__field-label" for="csv_file">
-                    <span><?= $block->escapeHtml(__('CSV File *')) ?></span>
-                </label>
-                <div class="admin__field-control">
-                    <input type="file" id="csv_file" name="csv_file"
-                           accept=".csv" class="admin__control-file" required/>
-                </div>
-                <div class="admin__field-note">
-                    <span><?= $block->escapeHtml(__('Accepted format: .csv')) ?></span>
-                </div>
-            </div>
-        </fieldset>
+
+        <!-- Drag-and-drop zone -->
+        <div class="or-dropzone" id="csv-dropzone">
+            <div class="or-dropzone__icon">&#128194;</div>
+            <div class="or-dropzone__text"><?= $block->escapeHtml(__('Drag & drop your CSV file here')) ?></div>
+            <div class="or-dropzone__hint"><?= $block->escapeHtml(__('or click to browse — Accepted format: .csv')) ?></div>
+            <div class="or-dropzone__filename" id="csv-filename" style="display:none;"></div>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv" required/>
+        </div>
 
         <div class="csv-template-download">
             <a href="<?= $block->escapeUrl($block->getDownloadTemplateUrl()) ?>" class="action-secondary">
@@ -52,98 +54,174 @@
         </div>
     </div>
 
-    <div class="order-replicator-section">
-        <h3><?= $block->escapeHtml(__('CSV Column Reference')) ?></h3>
-        <table class="admin__table-primary">
-            <thead>
-                <tr>
-                    <th><?= $block->escapeHtml(__('Column')) ?></th>
-                    <th><?= $block->escapeHtml(__('Required')) ?></th>
-                    <th><?= $block->escapeHtml(__('Description')) ?></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><code>customer_email</code></td>
-                    <td><?= $block->escapeHtml(__('Yes')) ?></td>
-                    <td><?= $block->escapeHtml(__('New customer email address')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>customer_firstname</code></td>
-                    <td><?= $block->escapeHtml(__('Yes')) ?></td>
-                    <td><?= $block->escapeHtml(__('Customer first name')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>customer_lastname</code></td>
-                    <td><?= $block->escapeHtml(__('Yes')) ?></td>
-                    <td><?= $block->escapeHtml(__('Customer last name')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>billing_street</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Billing street address (uses source order if blank)')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>billing_city</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Billing city')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>billing_region</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Billing state/region name')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>billing_postcode</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Billing zip/postal code')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>billing_country_id</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Billing country code (e.g., US, GB)')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>billing_telephone</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Billing phone number')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>shipping_*</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Same as billing_ columns but for shipping. Falls back to billing if blank.')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>override_sku</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Pipe-separated SKUs to replace (e.g., NEW-SKU-1|NEW-SKU-2)')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>override_price</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Pipe-separated prices matching override_sku order')) ?></td>
-                </tr>
-                <tr>
-                    <td><code>override_qty</code></td>
-                    <td><?= $block->escapeHtml(__('No')) ?></td>
-                    <td><?= $block->escapeHtml(__('Pipe-separated quantities matching override_sku order')) ?></td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- CSV Column Reference (Collapsible) -->
+    <div class="or-card">
+        <button type="button" class="or-collapsible__toggle" id="csv-ref-toggle">
+            <span><?= $block->escapeHtml(__('CSV Column Reference')) ?></span>
+            <span class="or-collapsible__arrow" id="csv-ref-arrow">&#9660;</span>
+        </button>
+        <div class="or-collapsible__body" id="csv-ref-body" style="margin-top:16px;">
+            <table class="or-table">
+                <thead>
+                    <tr>
+                        <th><?= $block->escapeHtml(__('Column')) ?></th>
+                        <th><?= $block->escapeHtml(__('Required')) ?></th>
+                        <th><?= $block->escapeHtml(__('Description')) ?></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>customer_email</code></td>
+                        <td><?= $block->escapeHtml(__('Yes')) ?></td>
+                        <td><?= $block->escapeHtml(__('New customer email address')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>customer_firstname</code></td>
+                        <td><?= $block->escapeHtml(__('Yes')) ?></td>
+                        <td><?= $block->escapeHtml(__('Customer first name')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>customer_lastname</code></td>
+                        <td><?= $block->escapeHtml(__('Yes')) ?></td>
+                        <td><?= $block->escapeHtml(__('Customer last name')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing_street</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Billing street address (uses source order if blank)')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing_city</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Billing city')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing_region</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Billing state/region name')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing_postcode</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Billing zip/postal code')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing_country_id</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Billing country code (e.g., US, GB)')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>billing_telephone</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Billing phone number')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>shipping_*</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Same as billing_ columns but for shipping. Falls back to billing if blank.')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>override_sku</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Pipe-separated SKUs to replace (e.g., NEW-SKU-1|NEW-SKU-2)')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>override_price</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Pipe-separated prices matching override_sku order')) ?></td>
+                    </tr>
+                    <tr>
+                        <td><code>override_qty</code></td>
+                        <td><?= $block->escapeHtml(__('No')) ?></td>
+                        <td><?= $block->escapeHtml(__('Pipe-separated quantities matching override_sku order')) ?></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
+    <!-- Actions -->
     <div class="order-replicator-actions">
         <button type="button" id="btn-process-csv" class="action-primary">
             <span><?= $block->escapeHtml(__('Process CSV & Create Orders')) ?></span>
         </button>
     </div>
 
-    <div id="csv-result" class="order-replicator-result" style="display:none;"></div>
+    <!-- Progress -->
     <div id="csv-progress" class="order-replicator-progress" style="display:none;">
-        <div class="progress-bar"><div class="progress-fill"></div></div>
-        <span class="progress-text"></span>
+        <div class="or-progress-wrap">
+            <div class="progress-bar"><div class="progress-fill" id="csv-progress-fill"></div></div>
+        </div>
+        <div class="progress-text">
+            <span id="csv-progress-step"><?= $block->escapeHtml(__('Preparing...')) ?></span>
+            <span class="or-progress-pct" id="csv-progress-pct">0%</span>
+        </div>
     </div>
+
+    <!-- Result -->
+    <div id="csv-result" class="order-replicator-result" style="display:none;"></div>
 </div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* --- Drag-and-drop file zone --- */
+    var dropzone = document.getElementById('csv-dropzone');
+    var fileInput = document.getElementById('csv_file');
+    var filenameEl = document.getElementById('csv-filename');
+
+    if (dropzone && fileInput) {
+        dropzone.addEventListener('click', function () { fileInput.click(); });
+
+        dropzone.addEventListener('dragover', function (e) {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', function () {
+            dropzone.classList.remove('dragover');
+        });
+        dropzone.addEventListener('drop', function (e) {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                showFilename(e.dataTransfer.files[0].name);
+            }
+        });
+        fileInput.addEventListener('change', function () {
+            if (fileInput.files.length) {
+                showFilename(fileInput.files[0].name);
+            }
+        });
+
+        function showFilename(name) {
+            if (filenameEl) {
+                filenameEl.textContent = name;
+                filenameEl.style.display = 'block';
+            }
+        }
+    }
+
+    /* --- Collapsible column reference --- */
+    var toggle = document.getElementById('csv-ref-toggle');
+    var body = document.getElementById('csv-ref-body');
+    var arrow = document.getElementById('csv-ref-arrow');
+
+    if (toggle && body) {
+        toggle.addEventListener('click', function () {
+            var isOpen = body.classList.contains('open');
+            if (isOpen) {
+                body.classList.remove('open');
+                if (arrow) arrow.classList.remove('open');
+            } else {
+                body.classList.add('open');
+                if (arrow) arrow.classList.add('open');
+            }
+        });
+    }
+})();
+</script>
 
 <script type="text/x-magento-init">
 {

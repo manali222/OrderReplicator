@@ -9,45 +9,53 @@ if (!$order) {
 $items = $block->getOrderItems();
 $billing = $order->getBillingAddress();
 $shipping = $order->getShippingAddress();
+$statusClass = strtolower(str_replace(' ', '-', $order->getStatus()));
 ?>
 
 <div class="order-replicator-container" id="order-replicator-form">
-    <!-- Source Order Summary -->
-    <div class="order-replicator-section">
+    <!-- Source Order Summary Card -->
+    <div class="or-card or-card--highlight">
         <h2><?= $block->escapeHtml(__('Source Order #%1', $order->getIncrementId())) ?></h2>
-        <div class="order-replicator-summary">
-            <div class="summary-row">
-                <span class="label"><?= $block->escapeHtml(__('Customer:')) ?></span>
-                <span class="value"><?= $block->escapeHtml($order->getCustomerFirstname() . ' ' . $order->getCustomerLastname()) ?></span>
+        <div class="or-stats-grid">
+            <div class="or-stat">
+                <span class="or-stat__label"><?= $block->escapeHtml(__('Customer')) ?></span>
+                <span class="or-stat__value"><?= $block->escapeHtml($order->getCustomerFirstname() . ' ' . $order->getCustomerLastname()) ?></span>
             </div>
-            <div class="summary-row">
-                <span class="label"><?= $block->escapeHtml(__('Email:')) ?></span>
-                <span class="value"><?= $block->escapeHtml($order->getCustomerEmail()) ?></span>
+            <div class="or-stat">
+                <span class="or-stat__label"><?= $block->escapeHtml(__('Email')) ?></span>
+                <span class="or-stat__value"><?= $block->escapeHtml($order->getCustomerEmail()) ?></span>
             </div>
-            <div class="summary-row">
-                <span class="label"><?= $block->escapeHtml(__('Grand Total:')) ?></span>
-                <span class="value"><?= $block->escapeHtml($order->formatPrice($order->getGrandTotal())) ?></span>
+            <div class="or-stat">
+                <span class="or-stat__label"><?= $block->escapeHtml(__('Grand Total')) ?></span>
+                <span class="or-stat__value"><?= $block->escapeHtml($order->formatPrice($order->getGrandTotal())) ?></span>
             </div>
-            <div class="summary-row">
-                <span class="label"><?= $block->escapeHtml(__('Status:')) ?></span>
-                <span class="value"><?= $block->escapeHtml($order->getStatusLabel()) ?></span>
+            <div class="or-stat">
+                <span class="or-stat__label"><?= $block->escapeHtml(__('Status')) ?></span>
+                <span class="or-stat__value">
+                    <span class="or-badge or-badge--<?= $block->escapeHtmlAttr($statusClass) ?>">
+                        <?= $block->escapeHtml($order->getStatusLabel()) ?>
+                    </span>
+                </span>
             </div>
         </div>
     </div>
 
-    <!-- Items Section (Editable) -->
-    <div class="order-replicator-section">
-        <h3><?= $block->escapeHtml(__('Order Items (Modify SKU/Price/Qty as needed)')) ?></h3>
-        <table class="admin__table-primary order-replicator-items-table">
+    <!-- Items Section -->
+    <div class="or-card or-table-card">
+        <h3><?= $block->escapeHtml(__('Order Items')) ?></h3>
+        <p class="or-help-text" style="margin-top:-8px;margin-bottom:12px;">
+            <?= $block->escapeHtml(__('Modify SKU, Price, or Qty as needed for the replicated order.')) ?>
+        </p>
+        <table class="or-table order-replicator-items-table">
             <thead>
                 <tr>
                     <th><?= $block->escapeHtml(__('#')) ?></th>
                     <th><?= $block->escapeHtml(__('Original SKU')) ?></th>
                     <th><?= $block->escapeHtml(__('Product Name')) ?></th>
-                    <th><?= $block->escapeHtml(__('New SKU (leave blank to keep)')) ?></th>
+                    <th><?= $block->escapeHtml(__('New SKU')) ?></th>
                     <th><?= $block->escapeHtml(__('Price')) ?></th>
                     <th><?= $block->escapeHtml(__('Qty')) ?></th>
-                    <th><?= $block->escapeHtml(__('Original Row Total')) ?></th>
+                    <th><?= $block->escapeHtml(__('Row Total')) ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -55,7 +63,7 @@ $shipping = $order->getShippingAddress();
                 <tr>
                     <td><?= (int) ($index + 1) ?></td>
                     <td>
-                        <?= $block->escapeHtml($item['sku']) ?>
+                        <code><?= $block->escapeHtml($item['sku']) ?></code>
                         <input type="hidden"
                                name="items[<?= (int) $index ?>][original_sku]"
                                value="<?= $block->escapeHtmlAttr($item['sku']) ?>"/>
@@ -83,7 +91,7 @@ $shipping = $order->getShippingAddress();
                                min="1"
                                value="<?= $block->escapeHtmlAttr((string) (int) $item['qty']) ?>"/>
                     </td>
-                    <td><?= $block->escapeHtml(number_format($item['row_total'], 2)) ?></td>
+                    <td><strong><?= $block->escapeHtml(number_format($item['row_total'], 2)) ?></strong></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -91,7 +99,7 @@ $shipping = $order->getShippingAddress();
     </div>
 
     <!-- New Customer Details -->
-    <div class="order-replicator-section">
+    <div class="or-card">
         <h3><?= $block->escapeHtml(__('New Customer Details')) ?></h3>
         <fieldset class="admin__fieldset">
             <div class="admin__field">
@@ -124,11 +132,11 @@ $shipping = $order->getShippingAddress();
         </fieldset>
     </div>
 
-    <!-- Billing Address -->
-    <div class="order-replicator-section order-replicator-address-section">
-        <div class="address-column">
+    <!-- Address Cards: Billing & Shipping -->
+    <div class="or-address-grid">
+        <div class="or-address-card">
             <h3><?= $block->escapeHtml(__('Billing Address')) ?></h3>
-            <p class="note"><?= $block->escapeHtml(__('Leave blank to use source order address')) ?></p>
+            <p class="or-note"><?= $block->escapeHtml(__('Leave blank to use source order address')) ?></p>
             <fieldset class="admin__fieldset">
                 <div class="admin__field">
                     <label class="admin__field-label"><span><?= $block->escapeHtml(__('Street')) ?></span></label>
@@ -177,9 +185,9 @@ $shipping = $order->getShippingAddress();
         </div>
 
         <?php if ($shipping): ?>
-        <div class="address-column">
+        <div class="or-address-card">
             <h3><?= $block->escapeHtml(__('Shipping Address')) ?></h3>
-            <p class="note"><?= $block->escapeHtml(__('Leave blank to use source order address')) ?></p>
+            <p class="or-note"><?= $block->escapeHtml(__('Leave blank to use source order address')) ?></p>
             <fieldset class="admin__fieldset">
                 <div class="admin__field">
                     <label class="admin__field-label"><span><?= $block->escapeHtml(__('Street')) ?></span></label>
@@ -229,43 +237,49 @@ $shipping = $order->getShippingAddress();
         <?php endif; ?>
     </div>
 
-    <!-- Shipping & Payment Method (Per-Customer Override) -->
-    <div class="order-replicator-section customer-shipping-payment">
+    <!-- Shipping & Payment Method -->
+    <div class="or-card">
         <h3><?= $block->escapeHtml(__('Shipping & Payment Method')) ?></h3>
-        <p class="note"><?= $block->escapeHtml(__('Leave blank to use source order settings')) ?></p>
-        <fieldset class="admin__fieldset">
-            <div class="admin__field">
-                <label class="admin__field-label" for="shipping_method">
-                    <span><?= $block->escapeHtml(__('Shipping Method')) ?></span>
-                </label>
-                <div class="admin__field-control">
-                    <input type="text" id="shipping_method" name="shipping_method"
-                           class="admin__control-text"
-                           placeholder="<?= $block->escapeHtmlAttr($order->getShippingMethod() ?: 'e.g., flatrate_flatrate') ?>"
-                           value=""/>
-                    <div class="admin__field-note">
-                        <span><?= $block->escapeHtml(__('Source order uses: %1', $order->getShippingMethod() ?: 'N/A')) ?></span>
+        <p class="or-help-text" style="margin-top:-8px;margin-bottom:16px;">
+            <?= $block->escapeHtml(__('Leave blank to use source order settings.')) ?>
+        </p>
+        <div class="or-method-row">
+            <fieldset class="admin__fieldset">
+                <div class="admin__field">
+                    <label class="admin__field-label" for="shipping_method">
+                        <span><?= $block->escapeHtml(__('Shipping Method')) ?></span>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="shipping_method" name="shipping_method"
+                               class="admin__control-text"
+                               placeholder="<?= $block->escapeHtmlAttr($order->getShippingMethod() ?: 'e.g., flatrate_flatrate') ?>"
+                               value=""/>
+                        <div class="admin__field-note">
+                            <span><?= $block->escapeHtml(__('Source order uses: %1', $order->getShippingMethod() ?: 'N/A')) ?></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="admin__field">
-                <label class="admin__field-label" for="payment_method">
-                    <span><?= $block->escapeHtml(__('Payment Method')) ?></span>
-                </label>
-                <div class="admin__field-control">
-                    <input type="text" id="payment_method" name="payment_method"
-                           class="admin__control-text"
-                           placeholder="<?= $block->escapeHtmlAttr('e.g., checkmo, free, cashondelivery') ?>"
-                           value=""/>
-                    <div class="admin__field-note">
-                        <span><?= $block->escapeHtml(__('Source order uses: %1', $order->getPayment() ? $order->getPayment()->getMethod() : 'N/A')) ?></span>
+            </fieldset>
+            <fieldset class="admin__fieldset">
+                <div class="admin__field">
+                    <label class="admin__field-label" for="payment_method">
+                        <span><?= $block->escapeHtml(__('Payment Method')) ?></span>
+                    </label>
+                    <div class="admin__field-control">
+                        <input type="text" id="payment_method" name="payment_method"
+                               class="admin__control-text"
+                               placeholder="<?= $block->escapeHtmlAttr('e.g., checkmo, free, cashondelivery') ?>"
+                               value=""/>
+                        <div class="admin__field-note">
+                            <span><?= $block->escapeHtml(__('Source order uses: %1', $order->getPayment() ? $order->getPayment()->getMethod() : 'N/A')) ?></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </fieldset>
+            </fieldset>
+        </div>
     </div>
 
-    <!-- Submit -->
+    <!-- Submit Actions -->
     <div class="order-replicator-actions">
         <button type="button" id="btn-replicate-order" class="action-primary">
             <span><?= $block->escapeHtml(__('Replicate Order')) ?></span>

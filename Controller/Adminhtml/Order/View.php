@@ -25,14 +25,14 @@ class View extends Action
         $orderId = (int) $this->getRequest()->getParam('order_id');
         if (!$orderId) {
             $this->messageManager->addErrorMessage(__('No order ID specified.'));
-            return $this->_redirect('orderreplicator/order/index');
+            return $this->_redirect('sales/order/index');
         }
 
         try {
             $order = $this->orderRepository->get($orderId);
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage(__('Order not found.'));
-            return $this->_redirect('orderreplicator/order/index');
+            return $this->_redirect('sales/order/index');
         }
 
         $page = $this->pageFactory->create();
